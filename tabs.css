@@ -1,20 +1,28 @@
 html, body {
-  width: 350px;
+	width: 800px;
+	overflow-x: hidden;
 }
 
-a {
-  margin: 10px;
-  display: inline-block;
+.panel {
+  margin: 20px;
+}
+
+.filter-container {
+	margin-bottom: 0.5em;
+	padding-bottom: 0.5em;
 }
 
 .switch-tabs {
-  padding-left: 10px;
+	margin: 0 4px;
 }
 
 .switch-tabs a {
   display: block;
+  text-decoration: none;
+  padding: .5em 0;
+  color: #444;
 }
 
-.panel {
-  margin: 5px;
+#tab-filter {
+	width: 100%;
 }
