@@ -9,13 +9,13 @@
   },
   "browser_action": {
     "browser_style": true,
-    "default_title": "Tabs, tabs, tabs",
+    "default_title": "Tab Finder",
     "default_popup": "tabs.html"
   },
-  "description": "A list of methods you can perform on a tab.",
-  "homepage_url": "https://github.com/mdn/webextensions-examples/tree/master/tabs-tabs-tabs",
+  "description": "Find and switch to your tabs quickly.",
+  "homepage_url": "https://github.com/chrisfranson/tab-finder",
   "manifest_version": 2,
-  "name": "Tabs, tabs, tabs",
+  "name": "Tab Finder",
   "permissions": [
     "tabs"
   ],
