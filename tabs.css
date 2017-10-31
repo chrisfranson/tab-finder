@@ -13,14 +13,26 @@ html, body {
 }
 
 .switch-tabs {
-	margin: 0 4px;
+	margin: 0;
 }
 
 .switch-tabs a {
   display: block;
   text-decoration: none;
-  padding: .5em 0;
+  padding: .5em 4px;
   color: #444;
+}
+
+a.tab-link.hidden {
+	display: none;
+}
+
+a.tab-link.shown {
+	display: block;
+}
+
+.switch-tabs a.selected {
+	background-color: #eee;
 }
 
 #tab-filter {

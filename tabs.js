@@ -1,8 +1,18 @@
-
-/**
- * listTabs to switch to
+/*
+ * Focus on the filter input, display a list of all tabs, and
+ * initialize the live text filter and tab link selection.
  */
-function listTabs() {
+function init() {
+
+  var tabFilter = document.getElementById("tab-filter");
+
+  if (location.search != "?focusHack") location.search = "?focusHack";
+
+  tabFilter.focus();
+  setTimeout(function() { tabFilter.focus(); }, 100);
+
+
+  // List all tabs
   getAllTabs().then((tabs) => {
     let tabsList = document.getElementById('tabs-list');
     let currentTabs = document.createDocumentFragment();
@@ -17,7 +27,7 @@ function listTabs() {
 
         tabLink.textContent = tab.title || tab.id;
         tabLink.setAttribute('href', tab.id);
-        tabLink.classList.add('tab-link');
+        tabLink.classList.add('tab-link', 'shown');
         tabLink.dataset.tab_url = tab.url;
         currentTabs.appendChild(tabLink);
       }
@@ -26,57 +36,134 @@ function listTabs() {
     }
 
     tabsList.appendChild(currentTabs);
+
+    initFilter();
+
   });
 }
 
+/*
+ * Intialize tab text filter and selection
+ */
 function initFilter() {
 
-  var tabFilter = document.getElementById("tab-filter");
+  var tabFilter = document.getElementById("tab-filter"),
+      tabLinks = document.getElementsByClassName("tab-link"),
+      tabCount = tabLinks.length,
+      selectedTabLink = resetSelectedTabLink();
 
-  if (location.search != "?focusHack") location.search = "?focusHack";
+  tabFilter.onkeyup = function(e) {
 
-  tabFilter.focus();
-  setTimeout(function() {
-    tabFilter.focus();
-  }, 100);
+    var matcher = new RegExp(tabFilter.value, "gi");
 
-  tabFilter.onkeyup=function(e){
+    switch(e.which) {
 
-    var filterInput = document.getElementById("tab-filter"),
-        matcher = new RegExp(filterInput.value, "gi"),
-        tabLinks = document.getElementsByClassName("tab-link"),
-        tabCount = tabLinks.length;
-
-    // If the Enter key is pressed, select the tab at the top of the list
-    if (e.which == 13) {
-      for (var i=0; i<tabCount; i++) {
-
-        var tabLink = tabLinks[i];
-        if (tabLink.style.display == "block") {
-          tabLink.click();
-          return;
+      // Enter: go to the selected tab
+      case 13:
+        if (document.getElementsByClassName("tab-link selected")[0]) {
+          document.getElementsByClassName("tab-link selected")[0].click();
         }
+        break;
 
-      }
+      // Up arrow: Select the previous visible tab link
+      case 38:
+        if (previousAvailable(selectedTabLink)) {
+          selectedTabLink.classList.remove('selected');
+          selectedTabLink = previousAvailable(selectedTabLink);
+          selectedTabLink.classList.add('selected');
+        }
+        break;
+
+      // Down arrow: Select the next visible tab link
+      case 40:
+        if (nextAvailable(selectedTabLink)) {
+          selectedTabLink.classList.remove('selected');
+          selectedTabLink = nextAvailable(selectedTabLink);
+          selectedTabLink.classList.add('selected');
+        }
+        break;
+
+      // Filter the tabs
+      default:
+        for (var i=0; i<tabCount; i++) {
+          var tabLink = tabLinks[i];
+          if (matcher.test(tabLink.innerHTML) || matcher.test(tabLink.dataset.tab_url)) {
+            tabLink.classList.add("shown");
+            tabLink.classList.remove("hidden");
+          }
+          else {
+            tabLink.classList.add("hidden");
+            tabLink.classList.remove("shown");
+          }
+        }
+        selectedTabLink = resetSelectedTabLink();
     }
+  }
 
-    for (var i=0; i<tabCount; i++) {
-
-      var tabLink = tabLinks[i];
-      if (matcher.test(tabLink.innerHTML) || matcher.test(tabLink.dataset.tab_url)) {
-        tabLink.style.display="block";
+  // Initialize tab link hover selection
+  for (var i=0; i<tabCount; i++) {
+    var tabLink = tabLinks[i];
+    tabLink.addEventListener('mouseenter', function(e) {
+      if (document.getElementsByClassName("tab-link selected")[0]) {
+        document.getElementsByClassName("tab-link selected")[0].classList.remove('selected');
       }
-      else {
-        tabLink.style.display="none";
-      }
+      e.target.classList.add('selected');
+    });
 
-    }
+    tabLink.addEventListener('mouseleave', function(e) {
+      e.target.classList.remove('selected');
+    });
   }
 }
 
+/*
+ * Deselect any selected tab links, and select the first available one
+ */
+function resetSelectedTabLink() {
+  var selectedTabLink = document.getElementsByClassName("tab-link selected");
 
-document.addEventListener("DOMContentLoaded", listTabs);
-document.addEventListener("DOMContentLoaded", initFilter);
+  for (var i=0; i<selectedTabLink.length; i++) {
+    selectedTabLink[i].classList.remove('selected');
+  }
+
+  selectedTabLink = document.getElementsByClassName("tab-link shown")[0];
+
+  selectedTabLink.classList.add('selected');
+
+  return selectedTabLink;
+}
+
+/*
+ * Return the next sibling that's visible (available for selection)
+ */
+function nextAvailable(tabLink) {
+  if (!tabLink) return false;
+
+  var nextSib = tabLink.nextSibling;
+
+  if (nextSib) {
+    if (nextSib.classList.contains('shown')) return nextSib;
+    else return nextAvailable(nextSib);
+  }
+
+  return false;
+}
+
+/*
+ * Return the previous sibling that's visible (available for selection)
+ */
+function previousAvailable(tabLink) {
+  if (!tabLink) return false;
+
+  var prevSib = tabLink.previousSibling;
+
+  if (prevSib) {
+    if (prevSib.classList.contains('shown')) return prevSib;
+    else return previousAvailable(prevSib);
+  }
+
+  return false;
+}
 
 function getCurrentWindowTabs() {
   return browser.tabs.query({currentWindow: true});
@@ -86,28 +173,12 @@ function getAllTabs() {
   return browser.tabs.query({});
 }
 
+/*
+ * Activate the selected tab and its parent window
+ */
 document.addEventListener("click", (e) => {
-  function callOnActiveTab(callback) {
-    getAllTabs().then((tabs) => {
-      for (var tab of tabs) {
-        if (tab.active) {
-          callback(tab, tabs);
-        }
-      }
-    });
-}
 
-  if (e.target.id === "tabs-alertinfo") {
-    callOnActiveTab((tab) => {
-      let props = "";
-      for (let item in tab) {
-        props += `${ item } = ${ tab[item] } \n`;
-      }
-      alert(props);
-    });
-  }
-
-  else if (e.target.classList.contains('tab-link')) {
+  if (e.target.classList.contains('tab-link')) {
 
     var tabId = +e.target.getAttribute('href');
 
@@ -120,6 +191,7 @@ document.addEventListener("click", (e) => {
           browser.windows.update(tab.windowId, {
             focused: true
           });
+          window.close();
         }
       }
     });
@@ -128,20 +200,5 @@ document.addEventListener("click", (e) => {
   e.preventDefault();
 });
 
-//onRemoved listener. fired when tab is removed
-browser.tabs.onRemoved.addListener((tabId, removeInfo) => {
-  console.log(`The tab with id: ${tabId}, is closing`);
-
-  if(removeInfo.isWindowClosing) {
-    console.log(`Its window is also closing.`);
-  } else {
-    console.log(`Its window is not closing`);
-  }
-});
-
-//onMoved listener. fired when tab is moved into the same window
-browser.tabs.onMoved.addListener((tabId, moveInfo) => {
-  var startIndex = moveInfo.fromIndex;
-  var endIndex = moveInfo.toIndex;
-  console.log(`Tab with id: ${tabId} moved from index: ${startIndex} to index: ${endIndex}`);
-});
+// Let's do this!
+document.addEventListener("DOMContentLoaded", init);
