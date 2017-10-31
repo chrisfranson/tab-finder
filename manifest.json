@@ -1,4 +1,9 @@
 {
+  "author": "Chris Franson",
+  "developer": {
+    "name": "Chris Franson",
+    "url": "http://zara2stra.com"
+  },
   "applications": {
     "gecko": {
       "strict_min_version": "58.0a1"
