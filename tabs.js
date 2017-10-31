@@ -17,7 +17,8 @@ function listTabs() {
 
         tabLink.textContent = tab.title || tab.id;
         tabLink.setAttribute('href', tab.id);
-        tabLink.classList.add('switch-tabs');
+        tabLink.classList.add('tab-link');
+        tabLink.dataset.tab_url = tab.url;
         currentTabs.appendChild(tabLink);
       }
 
@@ -28,7 +29,47 @@ function listTabs() {
   });
 }
 
+function initFilter() {
+
+  var tabFilter = document.getElementById("tab-filter");
+
+  tabFilter.onkeyup=function(e){
+
+    var filterInput = document.getElementById("tab-filter"),
+        matcher = new RegExp(filterInput.value, "gi"),
+        tabLinks = document.getElementsByClassName("tab-link"),
+        tabCount = tabLinks.length;
+
+    // If the Enter key is pressed, select the tab at the top of the list
+    if (e.which == 13) {
+      for (var i=0; i<tabCount; i++) {
+
+        var tabLink = tabLinks[i];
+        if (tabLink.style.display == "block") {
+          tabLink.click();
+          return;
+        }
+
+      }
+    }
+
+    for (var i=0; i<tabCount; i++) {
+
+      var tabLink = tabLinks[i];
+      if (matcher.test(tabLink.innerHTML) || matcher.test(tabLink.dataset.tab_url)) {
+        tabLink.style.display="block";
+      }
+      else {
+        tabLink.style.display="none";
+      }
+
+    }
+  }
+}
+
+
 document.addEventListener("DOMContentLoaded", listTabs);
+document.addEventListener("DOMContentLoaded", initFilter);
 
 function getCurrentWindowTabs() {
   return browser.tabs.query({currentWindow: true});
@@ -59,6 +100,7 @@ document.addEventListener("click", (e) => {
     });
   }
 
+  else if (e.target.classList.contains('tab-link')) {
 
     var tabId = +e.target.getAttribute('href');
 
@@ -66,7 +108,10 @@ document.addEventListener("click", (e) => {
       for (var tab of tabs) {
         if (tab.id === tabId) {
           browser.tabs.update(tabId, {
-              active: true
+            active: true
+          });
+          browser.windows.update(tab.windowId, {
+            focused: true
           });
         }
       }
