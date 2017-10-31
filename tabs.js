@@ -33,6 +33,13 @@ function initFilter() {
 
   var tabFilter = document.getElementById("tab-filter");
 
+  if (location.search != "?focusHack") location.search = "?focusHack";
+
+  tabFilter.focus();
+  setTimeout(function() {
+    tabFilter.focus();
+  }, 100);
+
   tabFilter.onkeyup=function(e){
 
     var filterInput = document.getElementById("tab-filter"),
