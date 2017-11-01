@@ -33,7 +33,8 @@
   "commands": {
     "_execute_browser_action": {
         "suggested_key": {
-            "default": "Ctrl+Shift+D"
+            "default": "Ctrl+Shift+D",
+            "mac": "MacCtrl+Shift+D"
         }
     }
   },
