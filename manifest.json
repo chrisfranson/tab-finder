@@ -6,7 +6,7 @@
   },
   "applications": {
     "gecko": {
-      "strict_min_version": "58.0a1"
+      "strict_min_version": "57"
     }
   },
   "background": {
@@ -38,5 +38,5 @@
         }
     }
   },
-  "version": "1.0.1"
+  "version": "1.0.2"
 }
