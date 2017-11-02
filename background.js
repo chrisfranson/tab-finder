@@ -10,10 +10,14 @@ function updateCount(tabId, isOnRemoved) {
     }
 
     browser.browserAction.setBadgeText({text: length.toString()});
-    if (length > 2) {
-      browser.browserAction.setBadgeBackgroundColor({'color': 'green'});
-    } else {
-      browser.browserAction.setBadgeBackgroundColor({'color': 'red'});
+    if (length < 30) {
+      browser.browserAction.setBadgeBackgroundColor({'color': '#479447'});
+    }
+    else if (length < 60) {
+      browser.browserAction.setBadgeBackgroundColor({'color': '#ECB40E'});
+    }
+    else {
+      browser.browserAction.setBadgeBackgroundColor({'color': '#D33B27'});
     }
   });
 }
