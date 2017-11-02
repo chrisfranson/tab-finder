@@ -196,6 +196,7 @@ document.addEventListener("click", (e) => {
       }
     });
   }
+  else document.getElementById("tab-filter").focus();
 
   e.preventDefault();
 });
