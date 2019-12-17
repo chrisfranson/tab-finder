@@ -3,7 +3,7 @@ Find and switch to your tabs quickly.
 
 ## Usage
 
-  1. Use Ctrl+Shift+D or click the Tab Finder button in your Toolbar to display a list of all of your open tabs across all of your browser windows.
+  1. Use Ctrl+Space or your custom extension shortcut, or click the Tab Finder button in your Toolbar to display a list of all of your open tabs across all of your browser windows.
   2. Type into the text input to filter tabs so that only those whose page titles or URLs contain your input are listed.
   3. Use the Up/Down arrow keys or your mouse to select a tab.
   4. Hit Enter or click a tab title to go to that tab!
