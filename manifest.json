@@ -6,7 +6,7 @@
   },
   "applications": {
     "gecko": {
-      "strict_min_version": "57"
+      "strict_min_version": "57.0"
     }
   },
   "background": {
@@ -33,10 +33,10 @@
   "commands": {
     "_execute_browser_action": {
         "suggested_key": {
-            "default": "Ctrl+Shift+D",
-            "mac": "MacCtrl+Shift+D"
+            "default": "Ctrl+Space",
+            "mac": "MacCtrl+Space"
         }
     }
   },
-  "version": "1.0.2"
+  "version": "1.0.3"
 }
